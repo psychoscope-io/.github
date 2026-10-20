@@ -22,6 +22,10 @@ mod-net-sensor  --(IPC: socket Unix, protobuf)-->  psychoscope-core  <--(ctl.soc
 
 O Core não precisa de privilégios de captura: só os módulos que precisam deles (como o sensor, com `CAP_NET_RAW`) os recebem.
 
+## Testar em minutos
+
+O `scripts/demo.sh` do [mod-net-sensor](https://github.com/psychoscope-io/mod-net-sensor#testar-em-minutos-demo) compila o Core e o sensor, reproduz um pcap malicioso e abre a TUI, sem privilégios e sem tocar na sua rede.
+
 ## Instalar
 
 Binários (linux amd64/arm64) com checksums e atestado de proveniência ficam nas *Releases* de `psychoscope-core` e `mod-net-sensor`. O guia de instalação como serviço systemd, com privilégios mínimos, está em [docs/INSTALL.md](https://github.com/psychoscope-io/psychoscope-core/blob/main/docs/INSTALL.md).
