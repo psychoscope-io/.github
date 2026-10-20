@@ -6,7 +6,7 @@ Repositório da organização: arquivos de comunidade (`SECURITY.md`, `CONTRIBUT
 
 - `agents/rules/*.md`: regras sempre ativas (fluxo de trabalho, princípios de design, organização do código, testes, git e publicação, segurança, contrato, estilo).
 - `agents/skills/<nome>/SKILL.md`: procedimentos sob demanda (revisar PRs do Dependabot, preparar publicação, refatorar sem quebrar).
-- Cada repositório recebe uma **cópia** em `.claude/rules/` e `.claude/skills/`. Edite só aqui e sincronize:
+- Cada repositório recebe uma **cópia** em `.claude/rules/` e `.claude/skills/`. Também são compartilhados `devtools/` (hooks de git em `.githooks/`, validador de commits em `scripts/` e `.editorconfig`). Edite só aqui e sincronize:
 
 ```bash
 scripts/sync-agent-rules.sh ../psychoscope-proto ../psychoscope-core ../mod-net-sensor
