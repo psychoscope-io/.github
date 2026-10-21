@@ -6,9 +6,11 @@ Direção do Psychoscope. É um plano, não uma promessa de datas: as fases são
 
 Objetivo: o `mod-net-sensor` e as regras de rede confiáveis o bastante para serem deixados rodando.
 
-- [ ] Reiniciar a máquina com o serviço habilitado e confirmar que ele sobe sozinho (inclusive com a interface Wi-Fi que chega depois do `network.target`).
+- [x] Reiniciar a máquina com o serviço habilitado e confirmar que ele sobe sozinho. Passou em 2026-10-20 (sensor conectado, sem reinícios); a corrida com a interface Wi-Fi que chega depois do `network.target` não se manifestou, mas é um teste só.
 - [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em conexões de keepalive de aplicativos legítimos).
 - [ ] `ignore_destinations` (IPs e faixas CIDR) na regra `net.beacon`, mais ajuste de limiares conforme os dados coletados.
+- [ ] `psychoscope-cli alerts --history` mostrar o contexto do alerta (hoje só a TUI mostra; os domínios de um `net.dns.nxdomain_burst` ficam em `dominios_exemplo` e a CLI os omite).
+- [ ] Avaliar se `net.dns.nxdomain_burst` precisa de tolerância na partida do sistema (disparou 5 s após o boot; causa ainda não confirmada).
 - [ ] `KillMode=mixed` na unit do systemd, para o Core encerrar o sensor de forma ordenada (hoje o log mostra `ENCERRAR nao confirmado`, sem efeito prático).
 - [ ] Atualizar o sensor para o `psychoscope-proto` v0.2.0 (hoje usa v0.1.0).
 - [ ] Higiene: instruções de desinstalação em `docs/INSTALL.md`; proteção do branch `main` nos repositórios.
