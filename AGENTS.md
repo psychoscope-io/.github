@@ -1,6 +1,6 @@
 # AGENTS.md — psychoscope-io/.github
 
-Repositório da organização: arquivos de comunidade (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, modelos de issue/PR, `profile/README.md`) e a **fonte das regras e skills de agentes** compartilhadas pelos outros repositórios.
+Repositório da organização: arquivos de comunidade (`SECURITY.md`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `ROADMAP.md`, modelos de issue/PR, `profile/README.md`) e a **fonte das regras e skills de agentes** compartilhadas pelos outros repositórios.
 
 ## Regras e skills compartilhadas
 
