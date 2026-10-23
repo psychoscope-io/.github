@@ -22,7 +22,20 @@ Pronto quando: uma semana sem alertas falsos inexplicados e a instalação por t
 
 Limitações conhecidas do sensor que ficam fora desta fase: QUIC, DoH e DNS sobre TCP além da primeira mensagem do segmento.
 
-## Fase B: preparar a plataforma para outros módulos (v0.4.0)
+## Configuração em tempo de execução (v0.4.0)
+
+Ajustar limiares, exceções e regras desligadas sem editar JSON nem reiniciar o serviço. Desenho: os ajustes ficam num arquivo próprio no diretório de estado, por cima do arquivo do administrador (que nunca é tocado); só o root escreve, com auditoria no log; só um conjunto fechado de campos é editável (nunca `modules`, sockets ou caminhos).
+
+- [x] Contrato aditivo no `psychoscope-proto` v0.3.0 (`PedidoLerConfig`, `PedidoAplicarConfig`, `ListaConfig`).
+- [x] Motor reconfigurável ao vivo (`Engine.Reconfigure`: troca regras e janela, mantém os eventos retidos) e limites de retenção (`Persister.SetLimits`).
+- [x] `internal/settings` (catálogo por reflexão, validação conjunta, gravação atômica `0600`, auditoria) e `overrides_path` no arquivo de configuração.
+- [x] `psychoscope-cli config`, `config set` e `config reset`.
+- [x] Tela de configurações na TUI (`:config`): rascunho, `Enter` e `:set` para editar, `:w` para gravar, `:q`/`:q!`/`:wq`, modo somente leitura.
+- [x] Tecla `i` no detalhe do alerta acrescenta a exceção sugerida (beacon, força bruta, túnel DNS).
+- [x] Comandos da TUI coerentes com o vim, em inglês (`:q`, `:q!`, `:quit`, `:stop`, `:config`, `:set`, `:w`, `:wq`); `:sair`, `:pause` e `:resume` removidos.
+- [ ] Validar na máquina real: instalar a v0.4.0, aplicar a exceção do Telegram pela tela e ver o `net.beacon` sumir sem reiniciar; conferir `overrides.json` (`0600`, dono `psychoscope`) e a auditoria no `journalctl`.
+
+## Fase B: preparar a plataforma para outros módulos (v0.5.0)
 
 Hoje o contrato (`EventoTelemetria`) e o motor de detecção só conhecem eventos de rede (`EventoFluxoRede`). Um segundo módulo exige generalizá-los de forma aditiva.
 
