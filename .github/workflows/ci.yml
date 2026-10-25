@@ -34,7 +34,9 @@ jobs:
           git ls-files -z '*.sh' 'devtools/githooks/*' | xargs -0 shellcheck
           go install github.com/rhysd/actionlint/cmd/actionlint@v1.7.12 && "$(go env GOPATH)/bin/actionlint"
       - name: testes dos scripts
-        run: scripts/test_dev.sh
+        run: |
+          scripts/test_dev.sh
+          scripts/test_tag.sh
   sync:
     # As copias de regras, skills, hooks e scripts nos tres repositorios devem ser iguais a fonte daqui.
     runs-on: ubuntu-latest
