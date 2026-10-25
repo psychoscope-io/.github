@@ -6,12 +6,14 @@ Repositório da organização: arquivos de comunidade (`SECURITY.md`, `CONTRIBUT
 
 - `agents/rules/*.md`: regras sempre ativas (fluxo de trabalho, princípios de design, organização do código, testes, git e publicação, segurança, contrato, estilo).
 - `agents/skills/<nome>/SKILL.md`: procedimentos sob demanda (revisar PRs do Dependabot, preparar publicação, refatorar sem quebrar).
-- Cada repositório recebe uma **cópia** em `.claude/rules/` e `.claude/skills/`. Também são compartilhados `devtools/` (hooks de git em `.githooks/`, validador de commits em `scripts/` e `.editorconfig`). Edite só aqui e sincronize:
+- Cada repositório recebe uma **cópia** em `.claude/rules/` e `.claude/skills/`. Também são compartilhados `devtools/` (hooks de git em `.githooks/`, validador de commits e `tag.sh` em `scripts/` e `.editorconfig`). Edite só aqui e sincronize:
 
 ```bash
 scripts/sync-agent-rules.sh ../psychoscope-proto ../psychoscope-core ../mod-net-sensor
 scripts/sync-agent-rules.sh --check ../psychoscope-proto ../psychoscope-core ../mod-net-sensor   # diverge? sai com 1
 ```
+
+`scripts/dev.sh` (doctor, setup, update, build, clean dos repositórios irmãos) e os testes `scripts/test_dev.sh` e `scripts/test_tag.sh` ficam só aqui e não são copiados; o CI da organização os roda.
 
 Regras e skills **específicas** de um repositório ficam só nele, com nomes que não colidem com as daqui.
 

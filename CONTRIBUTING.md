@@ -21,6 +21,8 @@ psychoscope/
   mod-net-sensor/
 ```
 
+Para clonar, conferir as ferramentas, atualizar e compilar tudo de uma vez, use `scripts/dev.sh` deste repositório (`doctor`, `setup`, `update`, `build`, `clean`; veja `scripts/dev.sh --help`). Os binários saem em `dist/`, ao lado dos repositórios.
+
 Ferramentas necessárias:
 
 - **Go**: a versão indicada em `go.mod` do `psychoscope-core` (para o `psychoscope-proto`, a versão do seu `go.mod`).
