@@ -1,66 +1,161 @@
 # Roadmap
 
-Direção do Psychoscope. É um plano, não uma promessa de datas: as fases são ordenadas por dependência e cada uma termina com um critério verificável. As decisões de escopo são do mantenedor.
+Direção do Psychoscope. É um plano, não uma promessa de datas: os marcos são ordenados por dependência, cada um tem um objetivo, uma justificativa para a posição que ocupa e termina com um critério verificável. As decisões de escopo são do mantenedor; para propor algo, abra uma issue (veja o [guia de contribuição](CONTRIBUTING.md)).
 
-## Fase A: fechar o módulo de rede (v0.2.x e v0.3.0)
+Este roadmap cobre o projeto de código aberto: o monitoramento de **uma máquina Linux, feito nela mesma**.
 
-Objetivo: o `mod-net-sensor` e as regras de rede confiáveis o bastante para serem deixados rodando.
+## Visão
 
-- [x] Reiniciar a máquina com o serviço habilitado e confirmar que ele sobe sozinho. Passou em 2026-10-20 (sensor conectado, sem reinícios); a corrida com a interface Wi-Fi que chega depois do `network.target` não se manifestou, mas é um teste só.
-- [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em conexões de keepalive de aplicativos legítimos).
-- [x] `ignore_destinations` (IPs e faixas CIDR) na regra `net.beacon` (core v0.3.0).
-- [ ] Ajustar limiares conforme os dados coletados na semana de tráfego real.
-- [x] `psychoscope-cli alerts -v` mostra o contexto do alerta, ao vivo e no histórico (core v0.3.0).
-- [x] `net.dns.nxdomain_burst` ignora zonas de DNS reverso (`ignore_suffixes`, padrão `in-addr.arpa` e `ip6.arpa`): o disparo 5 s após o boot eram consultas de DNS reverso de endereços 172.x, compatíveis com as redes Docker da máquina de teste (core v0.3.0).
-- [x] TUI: sair e encerrar módulo por linha de comando (`:q`, `:stop`), e tela de detalhes do alerta com `Enter` (core v0.3.0).
-- [x] `KillMode=mixed` na unit do systemd: o Core encerra o sensor de forma ordenada e o aviso `ENCERRAR nao confirmado` some (core v0.3.0; confirmado com unidades transitórias, falta ver no serviço instalado).
-- [x] Sensor no `psychoscope-proto` v0.2.0 (sem release própria; entra na próxima do sensor).
-- [x] Instruções de desinstalação em `docs/INSTALL.md`.
-- [x] Proteção do branch `main`: já exige os checks de CI em cada repositório. Está com `enforce_admins` desligado, então o mantenedor ainda pode empurrar direto; ligar isso (para valer também para ele) é decisão do mantenedor.
+Uma ferramenta que se instala em minutos, roda o tempo todo sem incomodar e, quando alerta, diz **o que aconteceu, por que é suspeito e o que fazer**. Quem a instala deve confiar nos alertas o bastante para não desligá-la.
 
-Pronto quando: uma semana sem alertas falsos inexplicados e a instalação por tarball de release documentada e testada.
+O caminho tem quatro etapas, nesta ordem:
 
-Limitações conhecidas do sensor que ficam fora desta fase: QUIC, DoH e DNS sobre TCP além da primeira mensagem do segmento.
+1. **Confiança:** os alertas de rede que já existem ficam bons o bastante para o uso diário.
+2. **Plataforma:** o Core deixa de saber só de rede e passa a aceitar qualquer tipo de módulo.
+3. **Cobertura:** um segundo módulo (processos) e a ligação entre processo e rede.
+4. **Estabilidade:** a versão 1.0, com compromisso de compatibilidade.
 
-## Configuração em tempo de execução (v0.4.0)
+Essa ordem é deliberada. Aumentar a cobertura antes de confiar nos alertas multiplica falsos positivos; abrir a plataforma antes de ter um segundo caso real a molda ao primeiro; declarar estabilidade antes dos dois fixa decisões ainda não testadas.
 
-Ajustar limiares, exceções e regras desligadas sem editar JSON nem reiniciar o serviço. Desenho: os ajustes ficam num arquivo próprio no diretório de estado, por cima do arquivo do administrador (que nunca é tocado); só o root escreve, com auditoria no log; só um conjunto fechado de campos é editável (nunca `modules`, sockets ou caminhos).
+## Princípios
 
-- [x] Contrato aditivo no `psychoscope-proto` v0.3.0 (`PedidoLerConfig`, `PedidoAplicarConfig`, `ListaConfig`).
-- [x] Motor reconfigurável ao vivo (`Engine.Reconfigure`: troca regras e janela, mantém os eventos retidos) e limites de retenção (`Persister.SetLimits`).
-- [x] `internal/settings` (catálogo por reflexão, validação conjunta, gravação atômica `0600`, auditoria) e `overrides_path` no arquivo de configuração.
-- [x] `psychoscope-cli config`, `config set` e `config reset`.
-- [x] Tela de configurações na TUI (`:config`): rascunho, `Enter` e `:set` para editar, `:w` para gravar, `:q`/`:q!`/`:wq`, modo somente leitura.
-- [x] Tecla `i` no detalhe do alerta acrescenta a exceção sugerida (beacon, força bruta, túnel DNS).
-- [x] Comandos da TUI coerentes com o vim, em inglês (`:q`, `:q!`, `:quit`, `:stop`, `:config`, `:set`, `:w`, `:wq`); `:sair`, `:pause` e `:resume` removidos.
-- [ ] Validar na máquina real: instalar a v0.4.0, aplicar a exceção do Telegram pela tela e ver o `net.beacon` sumir sem reiniciar; conferir `overrides.json` (`0600`, dono `psychoscope`) e a auditoria no `journalctl`.
+- **Alerta explicável e ajustável.** Todo alerta traz o contexto que o originou e, quando faz sentido, uma exceção pronta para aplicar. Falso positivo sem explicação é tratado como defeito.
+- **Privilégio mínimo.** O Core roda sem privilégios; cada módulo recebe só o que precisa e o documenta.
+- **Local primeiro.** Os dados ficam na máquina. Nada é enviado para fora sem configuração explícita do administrador.
+- **Leve.** Custo de CPU e memória medido e publicado ([DESEMPENHO.md](https://github.com/psychoscope-io/mod-net-sensor/blob/main/docs/DESEMPENHO.md)); regressão de desempenho bloqueia versão.
+- **Contrato estável.** Mudanças no `psychoscope-proto` são aditivas, para que módulos de versões diferentes continuem conversando com o Core.
+- **Toda regra vem com seu teste.** Regra nova só entra com pcap ou fixture de caso positivo, de caso negativo e dos falsos positivos conhecidos.
 
-## Fase B: preparar a plataforma para outros módulos (v0.5.0)
+## Onde estamos
 
-Hoje o contrato (`EventoTelemetria`) e o motor de detecção só conhecem eventos de rede (`EventoFluxoRede`). Um segundo módulo exige generalizá-los de forma aditiva.
+Versões atuais: `psychoscope-core` v0.6.1, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.4.0.
+
+Já entregue:
+
+- **Core:** supervisor de módulos, IPC autenticado pelo kernel (`SO_PEERCRED`), motor de detecção em janela deslizante, alertas persistidos em SQLite e métricas Prometheus.
+- **Sensor de rede:** libpcap ou arquivo pcap, decodificação de DNS, TCP, TLS e ICMP, contadores de perda e descarte, `--check` e `--list-interfaces` para diagnosticar o ambiente.
+- **Oito regras de rede:** varredura SYN, força bruta em portas de autenticação, varredura ICMP, rajada de NXDOMAIN (DGA), túnel DNS, taxa de DNS, TLS suspeito e beacon.
+- **CLI e TUI:** detalhe do alerta, exceção sugerida em uma tecla (`i`, desfeita com `u`) e configuração em tempo de execução, sem editar JSON nem reiniciar o serviço.
+- **Instalação:** serviço systemd com usuário dedicado, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
+
+Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto e taxa de falsos positivos ao longo de semanas.
+
+## Visão geral dos marcos
+
+| Marco | Tema | Pergunta que responde |
+|---|---|---|
+| 1 | Confiável no uso diário | Posso deixar rodando e confiar nos alertas? |
+| 2 | Plataforma para outros módulos | Posso escrever um módulo sem alterar o Core? |
+| 3 | Monitoramento de processos | O que está sendo executado na máquina? |
+| 4 | Correlação processo e rede | Qual programa originou esta conexão? |
+| 5 | Versão 1.0 | Posso depender disso sem medo de quebra? |
+
+Um marco só fecha quando o critério "pronto quando" é cumprido; correções menores saem entre eles.
+
+## Marco 1: confiável no uso diário
+
+**Objetivo:** dá para deixar o Psychoscope rodando numa máquina real por semanas sem alertas falsos inexplicados e sem precisar ler o código para entender um alerta.
+
+**Por que primeiro:** é o que decide se alguém mantém a ferramenta instalada. Tudo o que vem depois herda a reputação dos alertas atuais.
+
+*Validar o que já existe*
+
+- [ ] Validar a configuração em tempo de execução na máquina real: aplicar uma exceção pela TUI e ver o alerta sumir sem reiniciar; conferir `overrides.json` (`0600`, dono `psychoscope`) e a auditoria no `journalctl`.
+- [ ] Confirmar o encerramento ordenado do sensor (`KillMode=mixed`) no serviço instalado, não só em unidades transitórias.
+- [ ] Rodar o Core e o sensor em arm64 de verdade, e não só compilar.
+- [ ] Medir o comportamento sob tráfego alto (taxa de pacotes, perdas, uso de CPU e memória) e publicar o resultado no `DESEMPENHO.md`.
+- [ ] Instalação testada do zero em Debian, Ubuntu e Fedora, incluindo atualização sem perder configuração nem histórico.
+
+*Reduzir falsos positivos*
+
+- [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em keepalive de aplicativos legítimos).
+- [ ] Ajustar os limiares padrão conforme esse catálogo.
+- [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele.
+- [ ] Preservar o estado do motor (cooldowns e séries do beacon) entre reinícios do Core, para que reiniciar ou reconfigurar não traga de volta alertas já vistos.
+
+*Tornar o alerta compreensível*
+
+- [ ] Página de referência por regra: o que detecta, por que importa, falsos positivos conhecidos, como investigar e como ajustar.
+- [ ] Cada alerta indica a técnica correspondente do MITRE ATT&CK, para quem precisa enquadrar o que viu.
+- [ ] `psychoscope-cli doctor`: verifica de uma vez serviço, permissões, interface, sensor conectado e perda de pacotes, e diz o que corrigir.
+- [ ] Análise offline de um pcap pela CLI (`psychoscope-cli analyze arquivo.pcap`), para reproduzir um alerta, testar um ajuste ou avaliar a ferramenta sem instalar o serviço.
+
+**Pronto quando:** uma semana em máquina real sem alerta falso inexplicado, toda regra com página de referência e ao menos um pcap de falso positivo nos testes, e instalação validada nas três distribuições e nas duas arquiteturas.
+
+## Marco 2: plataforma para outros módulos
+
+**Objetivo:** o Core aceita módulos que não são de rede sem gambiarra. Hoje o contrato (`EventoTelemetria`) e o motor só conhecem eventos de rede (`EventoFluxoRede`).
+
+**Por que agora:** é a base do Marco 3. Fazer antes do módulo novo, e não junto, evita que a plataforma nasça moldada ao primeiro caso. O guia de módulos também é o que permite a terceiros contribuírem.
 
 - [ ] `EventoTelemetria.dado` com novas variantes (mudança só aditiva no `psychoscope-proto`).
 - [ ] `Event` genérico no motor: cada regra declara o tipo de evento que consome.
-- [ ] Métricas, alertas e TUI por módulo, sem suposição de que todo módulo é de rede.
-- [ ] Guia e skill "como criar um módulo" (hoje só existe a do decoder de protocolo).
+- [ ] Métricas, alertas e TUI por módulo, sem supor que todo módulo é de rede.
 - [ ] Modelo de privilégios por módulo (capabilities e usuário), mantendo o Core sem privilégios.
+- [ ] Regras com testes de tabela e fixtures reutilizáveis, para quem escreve uma regra testá-la sem subir o Core inteiro.
+- [ ] Guia "como criar um módulo", com um módulo mínimo de exemplo que passa nos testes de ponta a ponta.
+- [ ] Política de versionamento do contrato publicada: o que é compatível, como um módulo declara a versão que fala e como o Core reage a uma versão desconhecida.
 
-Feito antes do módulo novo, e não junto, para a plataforma não ficar moldada ao primeiro caso.
+**Pronto quando:** o módulo de exemplo do guia, escrito sem tocar no Core, emite eventos, dispara uma regra e aparece na TUI.
 
-## Fase C: monitoramento de processos do sistema
+## Marco 3: monitoramento de processos
 
-Escopo decidido: processos do sistema (execuções suspeitas, binários removidos do disco, comandos vindos de `/tmp`). Começa lendo `/proc`, sem privilégio. Monitoramento de recursos de hardware (CPU, memória, temperatura, disco) e coleta em tempo real por eBPF ficam para uma etapa posterior.
+**Objetivo:** detectar execuções suspeitas na máquina. Começa lendo `/proc`, sem privilégio, para manter a instalação simples e o risco baixo.
 
-- [ ] Novo módulo (nome a definir) emitindo eventos de processo para o Core.
-- [ ] Primeiras regras, cada uma com casos de falso positivo.
-- [ ] Documentação de instalação e privilégios do módulo.
+**Por que depois do Marco 2:** é o primeiro módulo não-rede e serve de prova de que a plataforma funciona.
 
-## Fase D: correlação entre módulos
+- [ ] Novo módulo emitindo eventos de início e fim de processo para o Core.
+- [ ] Primeiras regras:
+  - binário executado a partir de diretórios graváveis por todos (`/tmp`, `/dev/shm`);
+  - processo cujo executável foi removido do disco;
+  - shell com entrada ou saída ligada a um socket de rede.
 
-Ligar o processo ao tráfego de rede, para que um alerta diga qual programa originou a conexão (por exemplo, o processo que mantém um beacon). É o principal ganho de ter mais de um módulo.
+  Cada uma com seus falsos positivos documentados e um caso de teste que os reproduz.
+- [ ] Exceções sugeridas no detalhe do alerta, como nas regras de rede.
+- [ ] Páginas de referência das novas regras, no mesmo formato do Marco 1.
+- [ ] Documentação de instalação, privilégios e limitações (o que uma leitura periódica de `/proc` não vê, como processos de vida muito curta).
 
-## Depois
+**Pronto quando:** as regras de processo passam pelo mesmo critério do Marco 1 (uma semana em máquina real sem alerta falso inexplicado).
 
-- Resposta (o "R" do MODR): hoje o sistema só detecta. Ações como bloquear um IP exigem desenho próprio de segurança e confirmação.
-- Gateway web.
-- Módulos de inteligência de ameaças e de regras YARA.
+## Marco 4: correlação entre processo e rede
+
+**Objetivo:** um alerta de rede diz qual programa originou a conexão, por exemplo, o processo que mantém um beacon. É o principal ganho de ter mais de um módulo e o que diferencia o Psychoscope de olhar rede e processos em separado.
+
+- [ ] Associar conexões a processos (PID, executável e usuário) na máquina local.
+- [ ] Contexto do processo no detalhe dos alertas de rede, quando disponível.
+- [ ] Exceções por executável, além de por destino (por exemplo, ignorar o beacon de um aplicativo conhecido, não de um IP).
+- [ ] Regras que só existem com os dois lados: por exemplo, um executável de diretório gravável que abre conexões periódicas para fora.
+- [ ] Revisar os limiares do Marco 1 com o contexto de processo, que deve eliminar parte dos falsos positivos.
+
+**Pronto quando:** os alertas de beacon e de força bruta originados na própria máquina mostram o processo responsável.
+
+## Marco 5: versão 1.0
+
+**Objetivo:** compromisso de estabilidade para quem instala e para quem escreve módulos.
+
+- [ ] Contrato, formato de configuração e saída da CLI declarados estáveis: mudança incompatível só em versão maior.
+- [ ] Pacotes `.deb` e `.rpm`, além do tarball e do `get.sh`.
+- [ ] Alertas também no journald em formato estruturado e estável, para quem já coleta logs da máquina.
+- [ ] Exportação local de alertas (JSON e CSV) pela CLI.
+- [ ] Páginas de manual (`man`) e autocompletar de shell para a CLI.
+- [ ] Fuzzing contínuo dos decoders do sensor e do framing do IPC no CI.
+- [ ] Revisão de segurança do Core e dos módulos antes da publicação.
+- [ ] SBOM publicado em cada release, ao lado dos checksums e do atestado de proveniência.
+- [ ] Documentação completa: instalação, operação, referência de regras e de configuração, criação de módulos.
+
+**Pronto quando:** a v1.0 do Core e dos módulos sai com os itens acima e a política de compatibilidade publicada.
+
+## Em avaliação
+
+Ideias sem compromisso, que podem entrar num marco ou ser descartadas:
+
+- Cobertura do sensor: DNS sobre TCP além da primeira mensagem do segmento, SNI em QUIC e identificação de DNS sobre HTTPS.
+- Novas regras de rede a partir do que o Marco 1 revelar.
+- Regras de rede para IPv6 com a mesma profundidade das de IPv4, caso o catálogo do Marco 1 mostre lacunas.
+- Tradução da documentação para o inglês, para ampliar a base de contribuidores.
+
+## Como acompanhar e participar
+
+- Cada item deste roadmap vira uma issue quando começa a ser feito; o estado fica nos marcos do GitHub.
+- Falso positivo ou falso negativo que você encontrou é a contribuição mais útil agora: abra uma issue com o alerta (`alerts -v`) e, se possível, um pcap anonimizado.
+- Proposta de funcionalidade: abra uma issue descrevendo o problema que ela resolve antes da solução; ela é avaliada contra os princípios acima.
