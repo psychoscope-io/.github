@@ -64,7 +64,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 *Validar o que já existe*
 
 - [ ] Validar a configuração em tempo de execução na máquina real: aplicar uma exceção pela TUI e ver o alerta sumir sem reiniciar; conferir `overrides.json` (`0600`, dono `psychoscope`) e a auditoria no `journalctl`.
-- [ ] Confirmar o encerramento ordenado do sensor (`KillMode=mixed`) no serviço instalado, não só em unidades transitórias.
+- [x] Confirmar o encerramento ordenado do sensor (`KillMode=mixed`) no serviço instalado, não só em unidades transitórias. (Verificado no serviço instalado: parada em ~30 ms, o sensor encerrado pelo Core com o resumo final e sem perdas, sem SIGKILL nem processo órfão, e o serviço sobe de novo com um sensor novo.)
 - [ ] Rodar o Core e o sensor em arm64 de verdade, e não só compilar.
 - [ ] Medir o comportamento sob tráfego alto (taxa de pacotes, perdas, uso de CPU e memória) e publicar o resultado no `DESEMPENHO.md`.
 - [ ] Instalação testada do zero em Debian, Ubuntu e Fedora, incluindo atualização sem perder configuração nem histórico.
