@@ -79,7 +79,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 *Tornar o alerta compreensível*
 
 - [x] Página de referência por regra: o que detecta, por que importa, falsos positivos conhecidos, como investigar e como ajustar.
-- [ ] Cada alerta indica a técnica correspondente do MITRE ATT&CK, para quem precisa enquadrar o que viu.
+- [x] Cada alerta indica a técnica correspondente do MITRE ATT&CK, para quem precisa enquadrar o que viu.
 - [x] `psychoscope-cli doctor`: verifica de uma vez serviço, permissões, interface, sensor conectado e perda de pacotes, e diz o que corrigir.
 - [x] Análise offline de um pcap pela CLI (`psychoscope-cli analyze arquivo.pcap`), para reproduzir um alerta, testar um ajuste ou avaliar a ferramenta sem instalar o serviço.
 
