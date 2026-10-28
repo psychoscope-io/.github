@@ -71,9 +71,9 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 
 *Reduzir falsos positivos*
 
-- [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em keepalive de aplicativos legítimos).
-- [ ] Ajustar os limiares padrão conforme esse catálogo.
-- [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele. (O mecanismo e o primeiro caso, `net.beacon` em reconexão periódica, já estão no catálogo do `mod-net-sensor`.)
+- [x] Observar uma semana de tráfego real e catalogar os falsos positivos (374 alertas em 8 dias; o catálogo está em `docs/REGRAS.md` do `psychoscope-core`).
+- [x] Ajustar os limiares padrão conforme esse catálogo. (Só onde havia um sinal que separa o legítimo do ataque: o scan horizontal ignora destinos que respondem, o `net.dns.nxdomain_burst` ignora consultas de descoberta de serviço; o `net.beacon` e o TLS ficaram com exceções documentadas.)
+- [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele. (Já têm pcap, no `mod-net-sensor`: `net.beacon`, `net.dns.nxdomain_burst`, `net.scan.syn` e `net.tls.suspicious`, além de três ataques que têm de continuar disparando. Faltam `net.dns.rate` e `net.dns.tunnel`.)
 - [x] Preservar o estado do motor (cooldowns e séries do beacon) entre reinícios do Core, para que reiniciar ou reconfigurar não traga de volta alertas já vistos.
 
 *Tornar o alerta compreensível*
