@@ -28,7 +28,7 @@ Essa ordem é deliberada. Aumentar a cobertura antes de confiar nos alertas mult
 
 ## Onde estamos
 
-Versões atuais: `psychoscope-core` v0.6.1, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.4.0.
+Versões atuais: `psychoscope-core` v0.8.0, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.5.0.
 
 Já entregue:
 
@@ -36,6 +36,9 @@ Já entregue:
 - **Sensor de rede:** libpcap ou arquivo pcap, decodificação de DNS, TCP, TLS e ICMP, contadores de perda e descarte, `--check` e `--list-interfaces` para diagnosticar o ambiente.
 - **Oito regras de rede:** varredura SYN, força bruta em portas de autenticação, varredura ICMP, rajada de NXDOMAIN (DGA), túnel DNS, taxa de DNS, TLS suspeito e beacon.
 - **CLI e TUI:** detalhe do alerta, exceção sugerida em uma tecla (`i`, desfeita com `u`) e configuração em tempo de execução, sem editar JSON nem reiniciar o serviço.
+- **Diagnóstico:** `psychoscope-cli doctor` verifica serviço, permissões, módulos e perda de pacotes e diz o que corrigir (`--sensor` inclui o `--check` do sensor; `--json` para scripts).
+- **Referência das regras:** uma página por regra com o que detecta, como investigar, falsos positivos e como ajustar ([REGRAS.md](https://github.com/psychoscope-io/psychoscope-core/blob/main/docs/REGRAS.md)).
+- **Estado do motor preservado:** cooldowns e séries do beacon sobrevivem a reinício e a mudança de configuração (só a regra com limiar ajustado recomeça).
 - **Instalação:** serviço systemd com usuário dedicado, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
 
 Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto e taxa de falsos positivos ao longo de semanas.
@@ -71,13 +74,13 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 - [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em keepalive de aplicativos legítimos).
 - [ ] Ajustar os limiares padrão conforme esse catálogo.
 - [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele.
-- [ ] Preservar o estado do motor (cooldowns e séries do beacon) entre reinícios do Core, para que reiniciar ou reconfigurar não traga de volta alertas já vistos.
+- [x] Preservar o estado do motor (cooldowns e séries do beacon) entre reinícios do Core, para que reiniciar ou reconfigurar não traga de volta alertas já vistos.
 
 *Tornar o alerta compreensível*
 
-- [ ] Página de referência por regra: o que detecta, por que importa, falsos positivos conhecidos, como investigar e como ajustar.
+- [x] Página de referência por regra: o que detecta, por que importa, falsos positivos conhecidos, como investigar e como ajustar.
 - [ ] Cada alerta indica a técnica correspondente do MITRE ATT&CK, para quem precisa enquadrar o que viu.
-- [ ] `psychoscope-cli doctor`: verifica de uma vez serviço, permissões, interface, sensor conectado e perda de pacotes, e diz o que corrigir.
+- [x] `psychoscope-cli doctor`: verifica de uma vez serviço, permissões, interface, sensor conectado e perda de pacotes, e diz o que corrigir.
 - [ ] Análise offline de um pcap pela CLI (`psychoscope-cli analyze arquivo.pcap`), para reproduzir um alerta, testar um ajuste ou avaliar a ferramenta sem instalar o serviço.
 
 **Pronto quando:** uma semana em máquina real sem alerta falso inexplicado, toda regra com página de referência e ao menos um pcap de falso positivo nos testes, e instalação validada nas três distribuições e nas duas arquiteturas.
