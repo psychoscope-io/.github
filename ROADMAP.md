@@ -73,7 +73,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 
 - [ ] Observar uma semana de tráfego real e catalogar os falsos positivos (já conhecido: `net.beacon` em keepalive de aplicativos legítimos).
 - [ ] Ajustar os limiares padrão conforme esse catálogo.
-- [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele.
+- [ ] Transformar cada falso positivo catalogado em um pcap de teste: a regra não pode voltar a disparar nele. (O mecanismo e o primeiro caso, `net.beacon` em reconexão periódica, já estão no catálogo do `mod-net-sensor`.)
 - [x] Preservar o estado do motor (cooldowns e séries do beacon) entre reinícios do Core, para que reiniciar ou reconfigurar não traga de volta alertas já vistos.
 
 *Tornar o alerta compreensível*
@@ -81,7 +81,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 - [x] Página de referência por regra: o que detecta, por que importa, falsos positivos conhecidos, como investigar e como ajustar.
 - [ ] Cada alerta indica a técnica correspondente do MITRE ATT&CK, para quem precisa enquadrar o que viu.
 - [x] `psychoscope-cli doctor`: verifica de uma vez serviço, permissões, interface, sensor conectado e perda de pacotes, e diz o que corrigir.
-- [ ] Análise offline de um pcap pela CLI (`psychoscope-cli analyze arquivo.pcap`), para reproduzir um alerta, testar um ajuste ou avaliar a ferramenta sem instalar o serviço.
+- [x] Análise offline de um pcap pela CLI (`psychoscope-cli analyze arquivo.pcap`), para reproduzir um alerta, testar um ajuste ou avaliar a ferramenta sem instalar o serviço.
 
 **Pronto quando:** uma semana em máquina real sem alerta falso inexplicado, toda regra com página de referência e ao menos um pcap de falso positivo nos testes, e instalação validada nas três distribuições e nas duas arquiteturas.
 
