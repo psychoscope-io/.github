@@ -41,7 +41,7 @@ Já entregue:
 - **Estado do motor preservado:** cooldowns e séries do beacon sobrevivem a reinício e a mudança de configuração (só a regra com limiar ajustado recomeça).
 - **Instalação:** serviço systemd com usuário dedicado, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
 
-Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto e taxa de falsos positivos ao longo de semanas.
+Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto em placa de rede física e em outro hardware, e taxa de falsos positivos ao longo de semanas.
 
 ## Visão geral dos marcos
 
@@ -66,7 +66,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 - [ ] Validar a configuração em tempo de execução na máquina real: aplicar uma exceção pela TUI e ver o alerta sumir sem reiniciar; conferir `overrides.json` (`0600`, dono `psychoscope`) e a auditoria no `journalctl`.
 - [x] Confirmar o encerramento ordenado do sensor (`KillMode=mixed`) no serviço instalado, não só em unidades transitórias. (Verificado no serviço instalado: parada em ~30 ms, o sensor encerrado pelo Core com o resumo final e sem perdas, sem SIGKILL nem processo órfão, e o serviço sobe de novo com um sensor novo.)
 - [ ] Rodar o Core e o sensor em arm64 de verdade, e não só compilar.
-- [ ] Medir o comportamento sob tráfego alto (taxa de pacotes, perdas, uso de CPU e memória) e publicar o resultado no `DESEMPENHO.md`.
+- [x] Medir o comportamento sob tráfego alto (taxa de pacotes, perdas, uso de CPU e memória) e publicar o resultado no `DESEMPENHO.md`. (Em um laptop i7-8565U: sem perdas até 200 mil pacotes/s de ruído e até 100 mil pacotes/s de DNS, em `lo` e em `veth`; 10 min a 50 mil pacotes/s sem perdas e com memória estável; gargalo atribuído à leitura IPC do Core e corrigido, e dois defeitos achados sob carga foram corrigidos no Core v0.11.1 e v0.11.2. Não medido: placa de rede física, outro hardware e arm64; acima de ~200 mil eventos/s o motor ainda descarta eventos, contados e documentados.)
 - [ ] Instalação testada do zero em Debian, Ubuntu e Fedora, incluindo atualização sem perder configuração nem histórico.
 
 *Reduzir falsos positivos*
