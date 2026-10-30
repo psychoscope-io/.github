@@ -71,7 +71,7 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 - [x] Confirmar o encerramento ordenado do sensor (`KillMode=mixed`) no serviço instalado, não só em unidades transitórias. (Verificado no serviço instalado: parada em ~30 ms, o sensor encerrado pelo Core com o resumo final e sem perdas, sem SIGKILL nem processo órfão, e o serviço sobe de novo com um sensor novo.)
 - [ ] Rodar o Core e o sensor em arm64 de verdade, e não só compilar.
 - [x] Medir o comportamento sob tráfego alto (taxa de pacotes, perdas, uso de CPU e memória) e publicar o resultado no `DESEMPENHO.md`. (Em um laptop i7-8565U: sem perdas até 200 mil pacotes/s de ruído e até 100 mil pacotes/s de DNS, em `lo` e em `veth`; 10 min a 50 mil pacotes/s sem perdas e com memória estável; gargalo atribuído à leitura IPC do Core e corrigido, e dois defeitos achados sob carga foram corrigidos no Core v0.11.1 e v0.11.2. Não medido: placa de rede física, outro hardware e arm64; acima de ~200 mil eventos/s o motor ainda descarta eventos, contados e documentados.)
-- [ ] Instalação testada do zero em Debian, Ubuntu e Fedora, incluindo atualização sem perder configuração nem histórico.
+- [x] Instalação testada do zero em Debian, Ubuntu e Fedora, incluindo atualização sem perder configuração nem histórico. (Testada em contêineres Docker com Debian 12, Ubuntu 24.04 e Fedora, pelo `deploy/test_distros.sh` do `psychoscope-core`. No Fedora a release do sensor não subia, porque pedia `libpcap.so.0.8`; o sensor passa a levar o libpcap embutido, e o binário foi conferido num Fedora 44 sem libpcap instalada. Não coberto: arm64, outras versões das distribuições e captura em Wi-Fi real.)
 
 *Reduzir falsos positivos*
 
