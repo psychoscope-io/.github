@@ -28,7 +28,7 @@ Essa ordem é deliberada. Aumentar a cobertura antes de confiar nos alertas mult
 
 ## Onde estamos
 
-Versões atuais: `psychoscope-core` v0.8.0, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.5.0.
+Versões atuais: `psychoscope-core` v0.12.0, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.5.0.
 
 Já entregue:
 
@@ -39,7 +39,11 @@ Já entregue:
 - **Diagnóstico:** `psychoscope-cli doctor` verifica serviço, permissões, módulos e perda de pacotes e diz o que corrigir (`--sensor` inclui o `--check` do sensor; `--json` para scripts).
 - **Referência das regras:** uma página por regra com o que detecta, como investigar, falsos positivos e como ajustar ([REGRAS.md](https://github.com/psychoscope-io/psychoscope-core/blob/main/docs/REGRAS.md)).
 - **Estado do motor preservado:** cooldowns e séries do beacon sobrevivem a reinício e a mudança de configuração (só a regra com limiar ajustado recomeça).
-- **Instalação:** serviço systemd com usuário dedicado, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
+- **Alertas enquadrados e reproduzíveis:** cada alerta indica a técnica do MITRE ATT&CK, e `psychoscope-cli analyze arquivo.pcap` reproduz alertas offline, sem instalar o serviço.
+- **Falsos positivos catalogados:** os limiares padrão foram ajustados a partir de uma semana de tráfego real, e cada caso virou um pcap de teste que a regra não pode voltar a disparar.
+- **Desempenho medido sob carga:** sem perdas até 200 mil pacotes/s de ruído e até 100 mil de DNS, com os números e os limites publicados no [DESEMPENHO.md](https://github.com/psychoscope-io/mod-net-sensor/blob/main/docs/DESEMPENHO.md).
+- **Privilégio separado:** o sensor roda em serviço próprio (`psychoscope-sensor`), com usuário dedicado e capabilities ambientes, sem `setcap`; o Core fica sem capabilities e com `NoNewPrivileges`, e autentica o módulo externo pelo UID que o kernel informa. `psychoscope-cli migrate-config` converte a configuração antiga.
+- **Instalação:** serviços systemd com usuários dedicados, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
 
 Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto em placa de rede física e em outro hardware, e taxa de falsos positivos ao longo de semanas.
 
