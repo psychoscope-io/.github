@@ -28,7 +28,7 @@ Essa ordem é deliberada. Aumentar a cobertura antes de confiar nos alertas mult
 
 ## Onde estamos
 
-Versões atuais: `psychoscope-core` v0.12.0, `mod-net-sensor` v0.3.0, `psychoscope-proto` v0.5.0.
+Versões atuais: `psychoscope-core` v0.13.0, `mod-net-sensor` v0.3.1, `psychoscope-proto` v0.6.0. O `mod-example` ainda não tem versão publicada (use a `main`).
 
 Já entregue:
 
@@ -43,6 +43,7 @@ Já entregue:
 - **Falsos positivos catalogados:** os limiares padrão foram ajustados a partir de uma semana de tráfego real, e cada caso virou um pcap de teste que a regra não pode voltar a disparar.
 - **Desempenho medido sob carga:** sem perdas até 200 mil pacotes/s de ruído e até 100 mil de DNS, com os números e os limites publicados no [DESEMPENHO.md](https://github.com/psychoscope-io/mod-net-sensor/blob/main/docs/DESEMPENHO.md).
 - **Privilégio separado:** o sensor roda em serviço próprio (`psychoscope-sensor`), com usuário dedicado e capabilities ambientes, sem `setcap`; o Core fica sem capabilities e com `NoNewPrivileges`, e autentica o módulo externo pelo UID que o kernel informa. `psychoscope-cli migrate-config` converte a configuração antiga.
+- **Plataforma para outros módulos:** o contrato aceita eventos genéricos (`EventoGenerico`) com limites conferidos pelo Core, o motor entrega a cada regra só o tipo de evento que ela consome, a regra `generic.burst` é a primeira que não é de rede, e o [`mod-example`](https://github.com/psychoscope-io/mod-example) com seu guia mostra como escrever um módulo sem tocar no Core.
 - **Instalação:** serviços systemd com usuários dedicados, por `get.sh` (instala, atualiza e desinstala) ou por tarball de release com checksums e atestado de proveniência.
 
 Ainda não verificado: execução em arm64 (os binários são gerados, mas não rodados), comportamento em tráfego alto em placa de rede física e em outro hardware, e taxa de falsos positivos ao longo de semanas.
@@ -95,13 +96,13 @@ Um marco só fecha quando o critério "pronto quando" é cumprido; correções m
 
 **Por que agora:** é a base do Marco 3. Fazer antes do módulo novo, e não junto, evita que a plataforma nasça moldada ao primeiro caso. O guia de módulos também é o que permite a terceiros contribuírem.
 
-- [ ] `EventoTelemetria.dado` com novas variantes (mudança só aditiva no `psychoscope-proto`).
-- [ ] `Event` genérico no motor: cada regra declara o tipo de evento que consome.
-- [ ] Métricas, alertas e TUI por módulo, sem supor que todo módulo é de rede.
-- [ ] Modelo de privilégios por módulo (capabilities e usuário), mantendo o Core sem privilégios.
-- [ ] Regras com testes de tabela e fixtures reutilizáveis, para quem escreve uma regra testá-la sem subir o Core inteiro.
-- [ ] Guia "como criar um módulo", com um módulo mínimo de exemplo que passa nos testes de ponta a ponta.
-- [ ] Política de versionamento do contrato publicada: o que é compatível, como um módulo declara a versão que fala e como o Core reage a uma versão desconhecida.
+- [x] `EventoTelemetria.dado` com novas variantes (mudança só aditiva no `psychoscope-proto`). (`psychoscope-proto` v0.6.0 acrescenta a variante `generico`; `docs/EVENTOS-GENERICOS.md` do `psychoscope-core` lista os limites.)
+- [x] `Event` genérico no motor: cada regra declara o tipo de evento que consome. (Um campo tipado por variante, sem `any`; o motor só entrega a cada regra o `Kind()` que ela declara, e um evento sem variante não chega a regra alguma.)
+- [x] Métricas, alertas e TUI por módulo, sem supor que todo módulo é de rede. (A TUI mostra "-" em PACOTES para quem não captura pacotes, o `doctor` mede a perda pelos eventos nesse caso, e o alerta de um módulo genérico traz o módulo no contexto e na descrição.)
+- [x] Modelo de privilégios por módulo (capabilities e usuário), mantendo o Core sem privilégios. (`docs/MODULOS.md` e uma unit-molde sem capabilities, conferida no CI; o módulo de exemplo foi instalado por ela em systemd real no Debian 12, Ubuntu 24.04 e Fedora, em contêineres.)
+- [x] Regras com testes de tabela e fixtures reutilizáveis, para quem escreve uma regra testá-la sem subir o Core inteiro. (Pacote `ruletest`: construtores de eventos num tempo controlado, `Run` sobre um motor real e `Table`.)
+- [x] Guia "como criar um módulo", com um módulo mínimo de exemplo que passa nos testes de ponta a ponta. (`mod-example`: guia em `docs/GUIA.md`, e o `e2e.sh` roda contra um Core de verdade, no CI, fixado no Core v0.13.0.)
+- [x] Política de versionamento do contrato publicada: o que é compatível, como um módulo declara a versão que fala e como o Core reage a uma versão desconhecida. (Seção "Compatibilidade" do README do `psychoscope-proto`.)
 
 **Pronto quando:** o módulo de exemplo do guia, escrito sem tocar no Core, emite eventos, dispara uma regra e aparece na TUI.
 
