@@ -9,8 +9,8 @@ Repositório da organização: arquivos de comunidade (`SECURITY.md`, `CONTRIBUT
 - Cada repositório recebe uma **cópia** em `.claude/rules/` e `.claude/skills/`. Também são compartilhados `devtools/` (hooks de git em `.githooks/`, validador de commits e `tag.sh` em `scripts/` e `.editorconfig`). Edite só aqui e sincronize:
 
 ```bash
-scripts/sync-agent-rules.sh ../psychoscope-proto ../psychoscope-core ../mod-net-sensor
-scripts/sync-agent-rules.sh --check ../psychoscope-proto ../psychoscope-core ../mod-net-sensor   # diverge? sai com 1
+scripts/sync-agent-rules.sh ../psychoscope-proto ../psychoscope-core ../mod-net-sensor ../mod-example
+scripts/sync-agent-rules.sh --check ../psychoscope-proto ../psychoscope-core ../mod-net-sensor ../mod-example   # diverge? sai com 1
 ```
 
 `scripts/dev.sh` (doctor, setup, update, build, clean dos repositórios irmãos) e os testes `scripts/test_dev.sh` e `scripts/test_tag.sh` ficam só aqui e não são copiados; o CI da organização os roda.

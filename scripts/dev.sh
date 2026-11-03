@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Ambiente de desenvolvimento do Psychoscope: confere as ferramentas, clona, atualiza e compila os
-# repositorios irmaos (psychoscope-proto, psychoscope-core, mod-net-sensor e este).
+# repositorios irmaos (psychoscope-proto, psychoscope-core, mod-net-sensor, mod-example e este).
 #
 #   scripts/dev.sh doctor [--dir DIR]
 #   scripts/dev.sh setup  [--dir DIR]
@@ -20,7 +20,7 @@ set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 BASE="${PSYCHOSCOPE_GIT_BASE:-https://github.com/psychoscope-io}"
-REPOS=(psychoscope-proto psychoscope-core mod-net-sensor)
+REPOS=(psychoscope-proto psychoscope-core mod-net-sensor mod-example)
 DIR="$(dirname "$ROOT")"
 CARGO=0
 FAILED=0
@@ -112,7 +112,7 @@ setup() {
 
 update() {
   local d name before after bad=0
-  for d in "$DIR/psychoscope-proto" "$DIR/psychoscope-core" "$DIR/mod-net-sensor" "$ROOT"; do
+  for d in "$DIR/psychoscope-proto" "$DIR/psychoscope-core" "$DIR/mod-net-sensor" "$DIR/mod-example" "$ROOT"; do
     name="$(basename "$d")"
     if [ ! -d "$d/.git" ]; then echo "ausente: $name (rode scripts/dev.sh setup)"; continue; fi
     if [ -n "$(git -C "$d" status --porcelain --untracked-files=no)" ]; then

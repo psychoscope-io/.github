@@ -67,6 +67,9 @@ seed_makefile mod-net-sensor
 seed_build mod-net-sensor mod-net-sensor
 seal mod-net-sensor
 
+seed_makefile mod-example
+seal mod-example
+
 # Este repositorio (a org) tambem tem remoto, porque o update o inclui.
 mkdir -p "$T/seed/psychoscope-github/scripts"
 cp "$HERE/dev.sh" "$T/seed/psychoscope-github/scripts/dev.sh"
@@ -85,9 +88,9 @@ push_remoto() {
   git -C "$T/pusher-$1" push -q origin main
 }
 
-# 1. setup clona os tres repositorios, cria o go.work e ativa os hooks; repetir e inofensivo
+# 1. setup clona os quatro repositorios, cria o go.work e ativa os hooks; repetir e inofensivo
 "$DEV" setup >"$T/o1.txt" 2>&1 || { cat "$T/o1.txt" >&2; fail "setup"; }
-for r in psychoscope-proto psychoscope-core mod-net-sensor; do
+for r in psychoscope-proto psychoscope-core mod-net-sensor mod-example; do
   [ -d "$T/work/$r/.git" ] || fail "$r nao foi clonado"
   [ "$(git -C "$T/work/$r" config core.hooksPath)" = .githooks ] || fail "hooks nao ativados em $r"
 done

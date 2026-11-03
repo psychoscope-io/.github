@@ -38,7 +38,7 @@ jobs:
           scripts/test_dev.sh
           scripts/test_tag.sh
   sync:
-    # As copias de regras, skills, hooks e scripts nos tres repositorios devem ser iguais a fonte daqui.
+    # As copias de regras, skills, hooks e scripts nos demais repositorios devem ser iguais a fonte daqui.
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -49,4 +49,6 @@ jobs:
         with: { repository: psychoscope-io/psychoscope-core, path: psychoscope-core }
       - uses: actions/checkout@v7
         with: { repository: psychoscope-io/mod-net-sensor, path: mod-net-sensor }
-      - run: psychoscope-github/scripts/sync-agent-rules.sh --check psychoscope-proto psychoscope-core mod-net-sensor
+      - uses: actions/checkout@v7
+        with: { repository: psychoscope-io/mod-example, path: mod-example }
+      - run: psychoscope-github/scripts/sync-agent-rules.sh --check psychoscope-proto psychoscope-core mod-net-sensor mod-example
